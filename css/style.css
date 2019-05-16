@@ -40,10 +40,10 @@ body {
   margin: 0 5px;
   width: 150px;
 }
-.reset .btn-reset {
+.reset .btn {
   margin-top: 15px;
   padding: 10px 0;
-  width: 150px;
+  width: 250px;
   text-transform: uppercase;
   text-align: center;
   font-weight: bold;

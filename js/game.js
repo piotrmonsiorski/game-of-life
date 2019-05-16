@@ -2,12 +2,15 @@ const initCols = 80;
 const initRows = 30;
 const initPercent = 30;
 const gameSpeed = 100 // setInterval interval
+let draw = false;
 
 const boardDiv = document.querySelector('.board');
+let fieldDivs;
 const inputRows = document.querySelector('#rows');
 const inputCols = document.querySelector('#cols');
 const inputPercent = document.querySelector('#percent');
 const btnReset = document.querySelector('#btn-reset');
+const btnDraw = document.querySelector('#btn-draw');
 
 const resetGame = () => {
 
@@ -170,8 +173,46 @@ class Game {
         clearInterval(gameReset);
         gameReset = setInterval(this.nextDay.bind(this), gameSpeed);
     }
+    drawGame() {
+        if (!draw) {
+            clearInterval(gameReset);
+            // clear map
+            this.map.fieldMap.forEach( col => {
+                col.forEach ( field => {
+                    field.neighbours = 0;
+                    field.state = false;
+                });
+            });
+            boardDiv.innerHTML = '';
+            this.renderMap(this.map);
+            btnDraw.textContent = 'play';
+            draw = true;
+            
+            const that = this;
+            
+            fieldDivs = [...document.querySelectorAll('.field')];
+            fieldDivs.forEach( field => {
+                field.addEventListener('click', function() {
+                    const col = field.dataset.col;
+                    const row = field.dataset.row;
+                    
+                    that.map.fieldMap[col][row].state = !that.map.fieldMap[col][row].state;
+                    field.classList.toggle('alive');
+                });
+            });
+        }
+        else {
+            btnDraw.textContent = 'clear board and draw';
+            draw = false;
+            boardDiv.innerHTML = '';
+            this.renderMap(this.map);
+            this.countNeighbours(this.map);
+            gameReset = setInterval(game.nextDay.bind(game), gameSpeed);
+        }
+    }
 }
 
 const game = new Game();
 let gameReset = setInterval(game.nextDay.bind(game), gameSpeed);
 btnReset.addEventListener('click', game.resetGame.bind(game));
+btnDraw.addEventListener('click', game.drawGame.bind(game));
